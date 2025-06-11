@@ -28,16 +28,16 @@ class CrawlToCSV:
 
     def start(self) -> None:
         """Scrape vacancies from Djinni by the provided category and save to
-        `vacancies.csv` file."""
-
+        `vacancies.csv` file.
+        """
         process = CrawlerProcess(self._settings)
         process.crawl("djinni", categories=self._category)
         process.start()
 
     def extract_statistics(self, *, save: bool = True) -> Statistics:
         """Merge descriptions from the `vacancies.csv`, extract
-        statistics and save it to the `statistics.csv`."""
-
+        statistics and save it to the `statistics.csv`.
+        """
         # Collect vacancy descriptions.
         with open(f"{DatabaseVacancies.collection}.csv") as csv_file:
             reader = csv.DictReader(csv_file)

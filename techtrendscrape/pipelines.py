@@ -22,9 +22,7 @@ class MongoPipeline(DatabaseVacancies):
         collection.bulk_write(self.create_replacements(self.items))
         self.client.close()
 
-    def process_item(
-        self, item: VacancyItem, spider: DjinniSpider
-    ) -> VacancyItem:
+    def process_item(self, item: VacancyItem, spider: DjinniSpider) -> VacancyItem:
         self.items.append(item)
         return item
 
