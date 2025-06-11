@@ -1,11 +1,10 @@
 from datetime import datetime
-from typing import Literal
 
 from pydantic import BaseModel, Field, NonNegativeInt
 
 
 class VacancyItem(BaseModel):
-    source: Literal["djinni"] = "djinni"
+    source: str = "djinni"
     category: str = Field(min_length=1)
     company_name: str = Field(min_length=1)
     company_type: str | None = Field(min_length=1)
