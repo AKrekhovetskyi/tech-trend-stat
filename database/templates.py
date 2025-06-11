@@ -19,8 +19,8 @@ class Database:
 
     collection: str
     database: str
-    indices: list[tuple[str, int]]
-    client: MongoClientSingleton | None = None
+    indices: ClassVar[list[tuple[str, int]]]
+    client: MongoClientSingleton
 
     settings = get_project_settings()
 
@@ -29,7 +29,7 @@ class Database:
             is_test=self.settings["IS_TEST"],
             cluster_host=getenv("MONGODB_CLUSTER_HOST"),
             host=getenv("MONGODB_HOST"),
-            port=int(getenv("MONGODB_PORT")),
+            port=int(port) if (port := getenv("MONGODB_PORT")) else None,
             username=getenv("MONGODB_USERNAME"),
             password=getenv("MONGODB_PASSWORD"),
         )
