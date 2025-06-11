@@ -74,7 +74,7 @@ class DatabaseVacancies(Database):
                 }
             ],
         ) as vacancies:
-            return [vacancy for vacancy in vacancies]
+            return list(vacancies)
 
 
 class DatabaseStatistics(Database):
