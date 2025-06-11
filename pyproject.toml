@@ -10,3 +10,7 @@ dependencies = [
     "pymongo>=4.13.0",
     "scrapy>=2.13.2",
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
