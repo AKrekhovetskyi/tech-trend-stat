@@ -21,14 +21,14 @@ class Wrangler(DatabaseVacancies):
         self,
         text: str | None,
         category: str,
-        extra_filters: set[str] = set(),
+        extra_filters: set[str] | None = None,
     ) -> None:
         """If the `text` is not passed, it will be retrieved from the
         vacancies in MongoDB.
         """
         self._text = text
         self._category = category
-        self._extra_filters = extra_filters
+        self._extra_filters = extra_filters or set()
         self._from_datetime: timedelta = timedelta(days=0)
         self._to_datetime: timedelta = timedelta(days=0)
 
