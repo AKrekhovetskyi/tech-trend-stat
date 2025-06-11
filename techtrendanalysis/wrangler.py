@@ -26,7 +26,6 @@ class Wrangler(DatabaseVacancies):
         """If the `text` is not passed, it will be retrieved from the
         vacancies in MongoDB.
         """
-        self._text = text
         self._category = category
         self._extra_filters = extra_filters or set()
         self._from_datetime: timedelta = timedelta(days=0)
@@ -36,7 +35,12 @@ class Wrangler(DatabaseVacancies):
         common_words = STOPWORDS_DIR / "common-words.json"
         self._stopwords = set(loads(ukr_stopwords.read_text()) + loads(common_words.read_text()))
 
-    def _clean_text(self) -> str:
+        if not text:
+            self.extract_text_from_vacancies()
+        else:
+            self._text = text
+
+    def _clean_text(self) -> None:
         to_filter = {"<br>", "<b>", "</b>", "• ", "- "}.union(self._extra_filters)
         pattern = re.compile(rf"{'|'.join(to_filter)}", flags=re.IGNORECASE)
         self._text = re.sub(pattern, " ", self._text)
@@ -54,8 +58,6 @@ class Wrangler(DatabaseVacancies):
         self.client.close()
 
     def calculate_frequency_distribution(self, limit_results: int = 20) -> Statistics:
-        if not self._text:
-            self.extract_text_from_vacancies()
         self._clean_text()
 
         nlp = spacy.load("en_core_web_sm")  # Load the spaCy model.
