@@ -1,6 +1,6 @@
 from collections.abc import Generator, Iterable
 from datetime import datetime
-from typing import Any
+from typing import Any, ClassVar
 from urllib.parse import quote_plus, unquote_plus
 from zoneinfo import ZoneInfo
 
@@ -17,8 +17,8 @@ class DjinniSpider(scrapy.Spider):
     """
 
     name = "djinni"
-    allowed_domains = ["djinni.co"]
-    start_urls = ["https://djinni.co/jobs/"]
+    allowed_domains: ClassVar[list[str]] = ["djinni.co"]
+    start_urls: ClassVar[list[str]] = ["https://djinni.co/jobs/"]
     categories = "Python"
 
     def start_requests(self) -> Iterable[Request]:
