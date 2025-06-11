@@ -26,7 +26,7 @@ class Database:
             is_test=True if environ["IS_TEST"].lower() == "true" else False,
             cluster_host=getenv("MONGODB_CLUSTER_HOST"),
             host=getenv("MONGODB_HOST"),
-            port=int(getenv("MONGODB_PORT", 27017)),
+            port=int(getenv("MONGODB_PORT")),
             username=getenv("MONGODB_USERNAME"),
             password=getenv("MONGODB_PASSWORD"),
         )
