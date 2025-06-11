@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 from os import environ, getenv
-from typing import Any
+from typing import Any, ClassVar
 
 from pydantic import BaseModel
 from pymongo import ASCENDING, DESCENDING, ReplaceOne
@@ -48,7 +48,11 @@ class Database:
 class DatabaseVacancies(Database):
     database = "vacancy_statistics"
     collection = "vacancies"
-    indices = [("publication_date", DESCENDING), ("company_name", ASCENDING), ("years_of_experience", ASCENDING)]
+    indices: ClassVar[list[tuple[str, int]]] = [
+        ("publication_date", DESCENDING),
+        ("company_name", ASCENDING),
+        ("years_of_experience", ASCENDING),
+    ]
 
     def fetch_vacancies(
         self,
@@ -76,4 +80,4 @@ class DatabaseVacancies(Database):
 class DatabaseStatistics(Database):
     database = "vacancy_statistics"
     collection = "statistics"
-    indices = [("category", ASCENDING), ("technology_frequency", ASCENDING)]
+    indices: ClassVar[list[tuple[str, int]]] = [("category", ASCENDING), ("technology_frequency", ASCENDING)]
