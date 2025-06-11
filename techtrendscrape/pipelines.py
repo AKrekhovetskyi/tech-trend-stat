@@ -18,18 +18,18 @@ class MongoPipeline(DatabaseVacancies):
         super().__init__()
         self.items: list[VacancyItem] = []
 
-    def close_spider(self, spider: DjinniSpider) -> None:
+    def close_spider(self, _: DjinniSpider) -> None:
         collection = self.connect_collection()
         collection.bulk_write(self.create_replacements(self.items))
         self.client.close()
 
-    def process_item(self, item: VacancyItem, spider: DjinniSpider) -> VacancyItem:
+    def process_item(self, item: VacancyItem, _: DjinniSpider) -> VacancyItem:
         self.items.append(item)
         return item
 
 
 class CSVPipeline(MongoPipeline):
-    def close_spider(self, spider: DjinniSpider) -> None:
+    def close_spider(self, _: DjinniSpider) -> None:
         fieldnames = VacancyItem.model_fields.keys()
         with Path(f"{self.collection}.csv").open("w") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)

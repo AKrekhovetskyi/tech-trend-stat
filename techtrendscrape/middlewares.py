@@ -6,6 +6,7 @@
 # useful for handling different item types with a single interface
 from scrapy import signals
 
+# ruff: noqa: ANN001, ANN206, ARG002, ANN201, UP028, G002, UP031
 
 class TechtrendscrapeSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
@@ -44,7 +45,7 @@ class TechtrendscrapeSpiderMiddleware:
     def process_start_requests(self, start_requests, spider):
         # Called with the start requests of the spider, and works
         # similarly to the process_spider_output() method, except
-        # that it doesn’t have a response associated.
+        # that it doesn't have a response associated.
 
         # Must return only requests (not items).
         for r in start_requests:
