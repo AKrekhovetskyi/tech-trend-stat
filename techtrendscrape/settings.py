@@ -8,12 +8,14 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from datetime import timedelta
+from os import environ
 
 BOT_NAME = "techtrendscrape"
 
 SPIDER_MODULES = ["techtrendscrape.spiders"]
 NEWSPIDER_MODULE = "techtrendscrape.spiders"
 
+IS_TEST = environ["IS_TEST"].lower() in {"1", "true", "yes", "on"}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "techtrendscrape (+http://www.yourdomain.com)"
