@@ -39,9 +39,9 @@ class Database:
         index_fields = [index[0] for index in self.indices]
         replacements = []
         for item in items:
-            item = item.model_dump()
-            indices = {index: item[index] for index in index_fields}
-            replacements.append(ReplaceOne(indices, item, upsert=True))
+            dumped_item = item.model_dump()
+            indices = {index: dumped_item[index] for index in index_fields}
+            replacements.append(ReplaceOne(indices, dumped_item, upsert=True))
         return replacements
 
 
