@@ -20,15 +20,19 @@ git clone https://github.com/AndriyKy/tech-trend-stat.git
 cd tech-trend-stat
 ```
 
-Create a virtual environment, install dependencies and set the `PYTHONPATH` environment variable:
+Install [`uv`](https://docs.astral.sh/uv/) manager and set the `PYTHONPATH` environment variable:
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+# Install uv with our official standalone installer.
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export UV_ENV_FILE=.env
 export PYTHONPATH="$(pwd):$(pwd)/techtrendanalysis:$(pwd)/techtrendanalysis"
 ```
 
-Create a copy of the file [`.env.copy`](.env.copy) -> `.env` and set the appropriate variables (in the case of working with MongoDB).
+Create a copy of the file [`.env.copy`](.env.copy) and set the required variables:
+
+```bash
+cp .env.sample .env
+```
 
 ## Getting Started
 ### MongoDB
@@ -38,7 +42,7 @@ Here is also the [instruction](https://www.mongodb.com/docs/atlas/create-connect
 
 Once the database has been successfully installed, you just need to run the following command to scrape the vacancies using the `scrapy` spider along with the Mongo pipeline:
 ```bash
-scrapy crawl djinni -a categories="Python"
+uv run scrapy crawl djinni -a categories="Python"
 ```
 
 You can substitute "Python" for any other category, or a stack of categories separated by a " | ". See available specializations (categories) on the Djinni website.
