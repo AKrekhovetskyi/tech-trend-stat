@@ -3,7 +3,6 @@ import re
 from collections import Counter
 from datetime import UTC, datetime, timedelta
 from json import loads
-from os.path import join as join_path
 from pathlib import Path
 from typing import Any
 
@@ -12,7 +11,7 @@ from pymongo.results import BulkWriteResult
 
 from database import DatabaseStatistics, DatabaseVacancies, Statistics
 
-STOPWORDS_DIR = join_path("techtrendanalysis", "stopwords")
+STOPWORDS_DIR = Path("techtrendanalysis/stopwords")
 
 
 class Wrangler(DatabaseVacancies):
@@ -33,11 +32,9 @@ class Wrangler(DatabaseVacancies):
         self._from_datetime: timedelta = timedelta(days=0)
         self._to_datetime: timedelta = timedelta(days=0)
 
-        with (
-            open(join_path(STOPWORDS_DIR, "ukrainian-stopwords.json")) as ukr_stopwords,
-            open(join_path(STOPWORDS_DIR, "common-words.json")) as common_words,
-        ):
-            self._stopwords = set(loads(ukr_stopwords.read()) + loads(common_words.read()))
+        ukr_stopwords = STOPWORDS_DIR / "ukrainian-stopwords.json"
+        common_words = STOPWORDS_DIR / "common-words.json"
+        self._stopwords = set(loads(ukr_stopwords.read_text()) + loads(common_words.read_text()))
 
     def _clean_text(self) -> str:
         to_filter = {"<br>", "<b>", "</b>", "• ", "- "}.union(self._extra_filters)
@@ -101,7 +98,7 @@ class Wrangler(DatabaseVacancies):
         file = Path(f"{DatabaseStatistics.collection}.csv")
         file_exists = file.exists()
         fieldnames = statistics.model_fields.keys()
-        with open(file, "a") as fp:
+        with file.open("a") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
             writer.writeheader() if not file_exists else None
             return writer.writerow(statistics.model_dump())
