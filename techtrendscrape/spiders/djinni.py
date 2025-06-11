@@ -2,6 +2,7 @@ from collections.abc import Generator, Iterable
 from datetime import datetime
 from typing import Any
 from urllib.parse import quote_plus, unquote_plus
+from zoneinfo import ZoneInfo
 
 import scrapy
 from scrapy.http import Request, Response
@@ -44,9 +45,8 @@ class DjinniSpider(scrapy.Spider):
             description=selector.css(".job-list-item__description span::attr(data-original-text)").get(),
             years_of_experience=years_of_experience,
             publication_date=datetime.strptime(
-                selector.css("span.text-muted span.mr-2.nobr::attr(title)").get(),
-                "%H:%M %d.%m.%Y",
-            ),
+                selector.css("span.text-muted span.mr-2.nobr::attr(title)").get(), "%H:%M %d.%m.%Y"
+            ).replace(tzinfo=ZoneInfo("Europe/Kyiv")),
             views=int(statistics[0].get().split()[0]),
             applications=int(statistics[1].get().split()[0]),
         )
