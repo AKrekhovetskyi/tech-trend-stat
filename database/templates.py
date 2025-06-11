@@ -48,11 +48,7 @@ class Database:
 class DatabaseVacancies(Database):
     database = "vacancy_statistics"
     collection = "vacancies"
-    indices = [
-        ("publication_date", DESCENDING),
-        ("company_name", ASCENDING),
-        ("years_of_experience", ASCENDING),
-    ]
+    indices = [("publication_date", DESCENDING), ("company_name", ASCENDING), ("years_of_experience", ASCENDING)]
 
     def fetch_vacancies(
         self,
@@ -68,11 +64,7 @@ class DatabaseVacancies(Database):
                         "$and": [
                             {"category": category},
                             {"publication_date": {"$lte": now - to_datetime}},
-                            {
-                                "publication_date": {
-                                    "$gte": now - from_datetime
-                                }
-                            },
+                            {"publication_date": {"$gte": now - from_datetime}},
                         ]
                     }
                 }

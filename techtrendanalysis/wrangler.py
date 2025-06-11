@@ -25,27 +25,22 @@ class Wrangler(DatabaseVacancies):
         extra_filters: set[str] = set(),
     ) -> None:
         """If the `text` is not passed, it will be retrieved from the
-        vacancies in MongoDB."""
-
+        vacancies in MongoDB.
+        """
         self._text = text
         self._category = category
         self._extra_filters = extra_filters
         self._from_datetime: timedelta = timedelta(days=0)
         self._to_datetime: timedelta = timedelta(days=0)
 
-        with open(
-            join_path(STOPWORDS_DIR, "ukrainian-stopwords.json")
-        ) as ukr_stopwords, open(
-            join_path(STOPWORDS_DIR, "common-words.json")
-        ) as common_words:
-            self._stopwords = set(
-                loads(ukr_stopwords.read()) + loads(common_words.read())
-            )
+        with (
+            open(join_path(STOPWORDS_DIR, "ukrainian-stopwords.json")) as ukr_stopwords,
+            open(join_path(STOPWORDS_DIR, "common-words.json")) as common_words,
+        ):
+            self._stopwords = set(loads(ukr_stopwords.read()) + loads(common_words.read()))
 
     def _clean_text(self) -> str:
-        to_filter = {"<br>", "<b>", "</b>", "• ", "- "}.union(
-            self._extra_filters
-        )
+        to_filter = {"<br>", "<b>", "</b>", "• ", "- "}.union(self._extra_filters)
         pattern = re.compile(rf"{'|'.join(to_filter)}", flags=re.IGNORECASE)
         self._text = re.sub(pattern, " ", self._text)
 
@@ -57,17 +52,11 @@ class Wrangler(DatabaseVacancies):
         self._from_datetime = from_datetime
         self._to_datetime = to_datetime
         self.connect_collection()
-        vacancies = self.fetch_vacancies(
-            self._category, from_datetime, to_datetime
-        )
-        self._text = " ".join(
-            [vacancy["description"] for vacancy in vacancies]
-        )
+        vacancies = self.fetch_vacancies(self._category, from_datetime, to_datetime)
+        self._text = " ".join([vacancy["description"] for vacancy in vacancies])
         self.client.close()
 
-    def calculate_frequency_distribution(
-        self, limit_results: int = 20
-    ) -> Statistics:
+    def calculate_frequency_distribution(self, limit_results: int = 20) -> Statistics:
         if not self._text:
             self.extract_text_from_vacancies()
         self._clean_text()
@@ -83,10 +72,7 @@ class Wrangler(DatabaseVacancies):
             if (
                 token.pos_ == "PROPN"  # IT techs are mostly proper nouns.
                 and (token_text := token.text) not in self._stopwords
-                and (
-                    ord(token_text[0]) in eng_uppercase
-                    or ord(token_text[0]) in eng_lowercase
-                )
+                and (ord(token_text[0]) in eng_uppercase or ord(token_text[0]) in eng_lowercase)
             ):
                 proper_nouns.append(token_text.lower())
                 lower_to_upper[token_text.lower()] = token_text
@@ -99,22 +85,16 @@ class Wrangler(DatabaseVacancies):
             to_datetime=now - self._to_datetime,
             technology_frequency={
                 lower_to_upper[noun_frequency[0]]: noun_frequency[1]
-                for noun_frequency in proper_nouns_count.most_common(
-                    limit_results
-                )
+                for noun_frequency in proper_nouns_count.most_common(limit_results)
             },
         )
 
     @staticmethod
-    def save_statistics(
-        statistics: Statistics, *, to_db: bool = True
-    ) -> BulkWriteResult | Any:
+    def save_statistics(statistics: Statistics, *, to_db: bool = True) -> BulkWriteResult | Any:
         if to_db:
             db = DatabaseStatistics()
             collection = db.connect_collection()
-            bulk_write_result = collection.bulk_write(
-                db.create_replacements([statistics])
-            )
+            bulk_write_result = collection.bulk_write(db.create_replacements([statistics]))
             db.client.close()
             return bulk_write_result
 

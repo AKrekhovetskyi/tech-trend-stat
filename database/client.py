@@ -20,9 +20,7 @@ class MongoClientSingleton(MongoClient):
         Otherwise, connect to a Mongo cloud.
         """
         if not is_test:
-            self._validate_production_params(
-                cluster_host=cluster_host, **kwargs
-            )
+            self._validate_production_params(cluster_host=cluster_host, **kwargs)
             client_kwargs = kwargs | dict(
                 host=f"mongodb+srv://{kwargs.pop('username')}:"
                 f"{kwargs.pop('password')}@{cluster_host}.mongodb.net/?"
@@ -44,15 +42,8 @@ class MongoClientSingleton(MongoClient):
     @staticmethod
     def _validate_production_params(**kwargs: Any) -> None:
         """Validate required parameters for the production environment."""
-        if (
-            "username" not in kwargs
-            or "password" not in kwargs
-            or "cluster_host" not in kwargs
-        ):
-            raise ValueError(
-                "`username`, `password`, and `cluster_host` "
-                "are required in a production environment."
-            )
+        if "username" not in kwargs or "password" not in kwargs or "cluster_host" not in kwargs:
+            raise ValueError("`username`, `password`, and `cluster_host` are required in a production environment.")
 
     def close(self) -> None:
         """Close the MongoDB connection and reset the instance."""
