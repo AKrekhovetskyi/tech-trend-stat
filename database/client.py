@@ -30,7 +30,7 @@ class MongoClientSingleton(MongoClient):
             client_kwargs = kwargs
         super().__init__(**client_kwargs)
 
-    def __new__(cls, **kwargs: Any) -> "MongoClientSingleton":
+    def __new__(cls, **_: Any) -> "MongoClientSingleton":
         """
         Create a new instance if it doesn't exist,
         otherwise return the existing one.
