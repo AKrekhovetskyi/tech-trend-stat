@@ -8,6 +8,7 @@ from scrapy import signals
 
 # ruff: noqa: ANN001, ANN206, ARG002, ANN201, UP028, G002, UP031
 
+
 class TechtrendscrapeSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
