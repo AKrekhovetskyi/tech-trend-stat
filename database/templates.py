@@ -1,10 +1,11 @@
 from datetime import UTC, datetime, timedelta
-from os import environ, getenv
+from os import getenv
 from typing import Any, ClassVar
 
 from pydantic import BaseModel
 from pymongo import ASCENDING, DESCENDING, ReplaceOne
 from pymongo.collection import Collection
+from scrapy.utils.project import get_project_settings
 
 from database.client import MongoClientSingleton
 
@@ -21,9 +22,11 @@ class Database:
     indices: list[tuple[str, int]]
     client: MongoClientSingleton | None = None
 
+    settings = get_project_settings()
+
     def connect_collection(self) -> Collection:
         self.client = MongoClientSingleton(
-            is_test=True if environ["IS_TEST"].lower() == "true" else False,
+            is_test=self.settings["IS_TEST"],
             cluster_host=getenv("MONGODB_CLUSTER_HOST"),
             host=getenv("MONGODB_HOST"),
             port=int(getenv("MONGODB_PORT")),
