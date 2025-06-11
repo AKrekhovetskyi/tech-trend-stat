@@ -50,6 +50,7 @@ class CrawlToCSV:
 
         if save:
             wrangler.save_statistics(statistics, to_db=False)
+        return statistics
 
 
 if __name__ == "__main__":
