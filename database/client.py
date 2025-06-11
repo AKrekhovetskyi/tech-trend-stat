@@ -21,11 +21,10 @@ class MongoClientSingleton(MongoClient):
         """
         if not is_test:
             self._validate_production_params(cluster_host=cluster_host, **kwargs)
-            client_kwargs = kwargs | dict(
-                host=f"mongodb+srv://{kwargs.pop('username')}:"
-                f"{kwargs.pop('password')}@{cluster_host}.mongodb.net/?"
-                "retryWrites=true&w=majority",
-            )
+            client_kwargs = kwargs | {
+                "host": f"mongodb+srv://{kwargs.pop('username')}:"
+                f"{kwargs.pop('password')}@{cluster_host}.mongodb.net/?retryWrites=true&w=majority"
+            }
         else:
             client_kwargs = kwargs
         super().__init__(**client_kwargs)
