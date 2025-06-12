@@ -24,16 +24,10 @@ class CollectionVacancies(MongoClient):
         now = datetime.now(UTC)
         with self.collection.aggregate(
             [
-                {
-                    "$match": {
-                        "$and": [
-                            {"category": category},
-                            {"publication_date": {"$lte": now - to_datetime}},
-                            {"publication_date": {"$gte": now - from_datetime}},
-                        ]
-                    }
-                }
-            ],
+                {"$addFields": {"pubDate": {"$dateFromString": {"dateString": "$publication_date"}}}},
+                {"$match": {"category": category, "pubDate": {"$gte": now - from_datetime, "$lte": now - to_datetime}}},
+                {"$project": {"pubDate": 0}},
+            ]
         ) as vacancies:
             return list(vacancies)
 
