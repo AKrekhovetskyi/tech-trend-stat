@@ -126,7 +126,7 @@ class Wrangler(Logging):
             with CollectionStatistics() as collection_statistics:
                 return collection_statistics.bulk_upsert(("from_datetime", "to_datetime"), items=[statistics])
 
-        file = Path(f"{CollectionStatistics.collection}.csv")
+        file = Path(f"{CollectionStatistics.collection_name}.csv")
         file_exists = file.exists()
         fieldnames = Statistics.model_fields.keys()
         with file.open("a") as fp:
