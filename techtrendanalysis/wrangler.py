@@ -127,11 +127,10 @@ class Wrangler(Logging):
                 return collection_statistics.bulk_upsert(("from_datetime", "to_datetime"), items=[statistics])
 
         file = Path(f"{CollectionStatistics.collection_name}.csv")
-        file_exists = file.exists()
         fieldnames = Statistics.model_fields.keys()
         with file.open("a") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
-            writer.writeheader() if not file_exists else None
+            writer.writeheader()
             return writer.writerow(statistics.model_dump())
 
 
