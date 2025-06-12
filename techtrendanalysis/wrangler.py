@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from json import loads
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import spacy
 from pymongo.results import BulkWriteResult
@@ -17,28 +18,19 @@ STOPWORDS_DIR = Path("techtrendanalysis/stopwords")
 class Wrangler:
     """Clean up the provided vacancy text and extract technology statistics."""
 
-    def __init__(
-        self,
-        text: str | None,
-        category: str,
-        extra_filters: set[str] | None = None,
-    ) -> None:
+    def __init__(self, category: str, extra_filters: set[str] | None = None) -> None:
         """If the `text` is not passed, it will be retrieved from the
         vacancies in MongoDB.
         """
+        self._text: str
         self._category = category
         self._extra_filters = extra_filters or set()
-        self._from_datetime: timedelta = timedelta(days=30)
-        self._to_datetime: timedelta = timedelta(days=0)
+        self._from_datetime: timedelta
+        self._to_datetime: timedelta
 
         ukr_stopwords = STOPWORDS_DIR / "ukrainian-stopwords.json"
         common_words = STOPWORDS_DIR / "common-words.json"
         self._stopwords = set(loads(ukr_stopwords.read_text()) + loads(common_words.read_text()))
-
-        if not text:
-            self.extract_text_from_vacancies()
-        else:
-            self._text = text
 
     def _clean_text(self) -> None:
         to_filter = {"<br>", "<b>", "</b>", "• ", "- "}.union(self._extra_filters)
@@ -47,14 +39,31 @@ class Wrangler:
 
     def extract_text_from_vacancies(
         self,
+        *,
         from_datetime: timedelta = timedelta(days=30),
         to_datetime: timedelta = timedelta(days=0),
+        from_mongodb_collection: bool = True,
     ) -> None:
         self._from_datetime = from_datetime
         self._to_datetime = to_datetime
-        with CollectionVacancies() as collection_vacancies:
-            vacancies = collection_vacancies.fetch_vacancies(self._category, from_datetime, to_datetime)
-            self._text = " ".join([vacancy["description"] for vacancy in vacancies])
+
+        if from_mongodb_collection:
+            with CollectionVacancies() as collection_vacancies:
+                vacancies = collection_vacancies.fetch_vacancies(self._category, from_datetime, to_datetime)
+                self._text = " ".join([vacancy["description"] for vacancy in vacancies])
+        else:
+            now = datetime.now(ZoneInfo("Europe/Kyiv"))
+            with Path(f"{CollectionVacancies.collection_name}.csv").open() as csv_file:
+                reader = csv.DictReader(csv_file)
+                self._text = ""
+                for row in reader:
+                    publication_date = datetime.fromisoformat(row["publication_date"])
+                    if (
+                        publication_date >= (now - from_datetime)
+                        and publication_date <= (now - to_datetime)
+                        and self._category == row["category"]
+                    ):
+                        self._text += row["description"]
 
     def calculate_frequency_distribution(self, limit_results: int = 20) -> Statistics:
         self._clean_text()
@@ -107,6 +116,7 @@ class Wrangler:
 
 if __name__ == "__main__":
     CATEGORY = "Python"
-    wrangler = Wrangler(None, CATEGORY)
+    wrangler = Wrangler(CATEGORY)
+    wrangler.extract_text_from_vacancies()
     statistics = wrangler.calculate_frequency_distribution()
     wrangler.save_statistics(statistics)
