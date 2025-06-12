@@ -3,7 +3,7 @@ from typing import Any, ClassVar, Self
 from pydantic import BaseModel
 from pymongo import MongoClient as DefaultMongoClient
 from pymongo import ReplaceOne
-from pymongo.collection import Collection
+from pymongo.collection import BulkWriteResult, Collection
 from scrapy.utils.project import get_project_settings
 
 
@@ -44,12 +44,18 @@ class MongoClient(DefaultMongoClient):
         self.collection.create_index(self.indexes, unique=True)
         return self
 
-    def create_replacements(self, items: list[BaseModel]) -> list[ReplaceOne]:
-        """Request replacements for `bulk_write` operation."""
-        index_fields = [index[0] for index in self.indexes]
-        replacements = []
+    def bulk_upsert(
+        self,
+        filter_fields: tuple[str, ...],
+        *,
+        items: list[BaseModel],
+        bulk_write_kwargs: dict[str, Any] | None = None,
+        update_one_kwargs: dict[str, Any] | None = None,
+    ) -> BulkWriteResult:
+        update_one_kwargs = {"upsert": True} | update_one_kwargs if update_one_kwargs else {"upsert": True}
+        items_to_upsert = []
         for item in items:
-            dumped_item = item.model_dump(mode="json")
-            indexes = {index: dumped_item[index] for index in index_fields}
-            replacements.append(ReplaceOne(indexes, dumped_item, upsert=True))
-        return replacements
+            dumped_model = item.model_dump(mode="json")
+            filter_ = {field: dumped_model[field] for field in filter_fields}
+            items_to_upsert.append(ReplaceOne(filter_, dumped_model, **update_one_kwargs))
+        return self.collection.bulk_write(items_to_upsert, **bulk_write_kwargs or {})
