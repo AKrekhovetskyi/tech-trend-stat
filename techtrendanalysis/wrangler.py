@@ -99,7 +99,7 @@ class Wrangler(DatabaseVacancies):
 
         file = Path(f"{DatabaseStatistics.collection}.csv")
         file_exists = file.exists()
-        fieldnames = statistics.model_fields.keys()
+        fieldnames = Statistics.model_fields.keys()
         with file.open("a") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
             writer.writeheader() if not file_exists else None
