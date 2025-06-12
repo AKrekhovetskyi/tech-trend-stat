@@ -18,7 +18,7 @@ class Collection:
 
     collection: str
     database: str
-    indices: ClassVar[list[tuple[str, int]]]
+    indexes: ClassVar[list[tuple[str, int]]]
     client: MongoClientSingleton
 
     settings = get_project_settings()
@@ -33,24 +33,24 @@ class Collection:
             password=self.settings["MONGODB_PASSWORD"],
         )
         collection = self.client[self.database][self.collection]
-        collection.create_index(self.indices, unique=True)
+        collection.create_index(self.indexes, unique=True)
         return collection
 
     def create_replacements(self, items: list[BaseModel]) -> list[ReplaceOne]:
         """Request replacements for `bulk_write` operation."""
-        index_fields = [index[0] for index in self.indices]
+        index_fields = [index[0] for index in self.indexes]
         replacements = []
         for item in items:
             dumped_item = item.model_dump(mode="json")
-            indices = {index: dumped_item[index] for index in index_fields}
-            replacements.append(ReplaceOne(indices, dumped_item, upsert=True))
+            indexes = {index: dumped_item[index] for index in index_fields}
+            replacements.append(ReplaceOne(indexes, dumped_item, upsert=True))
         return replacements
 
 
 class CollectionVacancies(Collection):
     database = "vacancy_statistics"
     collection = "vacancies"
-    indices: ClassVar[list[tuple[str, int]]] = [
+    indexes: ClassVar[list[tuple[str, int]]] = [
         ("category", ASCENDING),
         ("publication_date", DESCENDING),
         ("years_of_experience", ASCENDING),
@@ -82,4 +82,4 @@ class CollectionVacancies(Collection):
 class CollectionStatistics(Collection):
     database = "vacancy_statistics"
     collection = "statistics"
-    indices: ClassVar[list[tuple[str, int]]] = [("category", ASCENDING), ("technology_frequency", ASCENDING)]
+    indexes: ClassVar[list[tuple[str, int]]] = [("category", ASCENDING), ("technology_frequency", ASCENDING)]
