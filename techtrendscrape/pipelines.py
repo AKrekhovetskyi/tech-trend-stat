@@ -17,25 +17,25 @@ if TYPE_CHECKING:
     from pydantic import BaseModel
 
 
-class MongoPipeline(CollectionVacancies):
+class Pipeline:
     def __init__(self) -> None:
-        super().__init__()
         self.items: list[BaseModel] = []
-
-    def close_spider(self, _: DjinniSpider) -> None:
-        collection = self.connect_collection()
-        collection.bulk_write(self.create_replacements(self.items))
-        self.client.close()
 
     def process_item(self, item: VacancyItem, _: DjinniSpider) -> VacancyItem:
         self.items.append(item)
         return item
 
 
-class CSVPipeline(MongoPipeline):
+class MongoPipeline(Pipeline):
+    def close_spider(self, _: DjinniSpider) -> None:
+        with CollectionVacancies() as vacancies:
+            vacancies.collection.bulk_write(vacancies.create_replacements(self.items))
+
+
+class CSVPipeline(Pipeline):
     def close_spider(self, _: DjinniSpider) -> None:
         fieldnames = VacancyItem.model_fields.keys()
-        with Path(f"{self.collection}.csv").open("w") as fp:
+        with Path(f"{CollectionVacancies.collection_name}.csv").open("w") as fp:
             writer = csv.DictWriter(fp, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows([item.model_dump() for item in self.items])
