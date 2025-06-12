@@ -88,8 +88,11 @@ class Wrangler:
         )
 
     @staticmethod
-    def save_statistics(statistics: Statistics, *, to_db: bool = True) -> BulkWriteResult | Any:
-        if to_db:
+    def save_statistics(statistics: Statistics, *, to_mongodb_collection: bool = True) -> BulkWriteResult | Any:
+        """Save statistics to the MongoDB collection file.
+        If `to_mongodb_collection` is False, then the statistics will be saved to a CSV file.
+        """
+        if to_mongodb_collection:
             with CollectionStatistics() as collection_statistics:
                 return collection_statistics.bulk_upsert(("from_datetime", "to_datetime"), items=[statistics])
 
