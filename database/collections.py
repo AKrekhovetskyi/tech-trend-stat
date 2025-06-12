@@ -35,4 +35,4 @@ class CollectionVacancies(MongoClient):
 class CollectionStatistics(MongoClient):
     collection_name = "statistics"
     database_name = "vacancy_statistics"
-    indexes: ClassVar[list[tuple[str, int]]] = [("category", ASCENDING), ("technology_frequency", ASCENDING)]
+    indexes: ClassVar[list[tuple[str, int]]] = [("category", ASCENDING), ("upsert_datetime", DESCENDING)]
