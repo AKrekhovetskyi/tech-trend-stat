@@ -16,7 +16,7 @@ class Collection:
     the `connect_collection` method.
     """
 
-    collection: str
+    collection_name: str
     database: str
     indexes: ClassVar[list[tuple[str, int]]]
     client: MongoClientSingleton
@@ -32,7 +32,7 @@ class Collection:
             username=self.settings["MONGODB_USERNAME"],
             password=self.settings["MONGODB_PASSWORD"],
         )
-        collection = self.client[self.database][self.collection]
+        collection = self.client[self.database][self.collection_name]
         collection.create_index(self.indexes, unique=True)
         return collection
 
@@ -49,7 +49,7 @@ class Collection:
 
 class CollectionVacancies(Collection):
     database = "vacancy_statistics"
-    collection = "vacancies"
+    collection_name = "vacancies"
     indexes: ClassVar[list[tuple[str, int]]] = [
         ("category", ASCENDING),
         ("publication_date", DESCENDING),
@@ -63,7 +63,7 @@ class CollectionVacancies(Collection):
         to_datetime: timedelta,
     ) -> list[dict[str, Any]]:
         now = datetime.now(UTC)
-        with self.client[self.database][self.collection].aggregate(
+        with self.client[self.database][self.collection_name].aggregate(
             [
                 {
                     "$match": {
@@ -81,5 +81,5 @@ class CollectionVacancies(Collection):
 
 class CollectionStatistics(Collection):
     database = "vacancy_statistics"
-    collection = "statistics"
+    collection_name = "statistics"
     indexes: ClassVar[list[tuple[str, int]]] = [("category", ASCENDING), ("technology_frequency", ASCENDING)]
