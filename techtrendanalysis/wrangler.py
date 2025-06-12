@@ -9,12 +9,12 @@ from typing import Any
 import spacy
 from pymongo.results import BulkWriteResult
 
-from database import DatabaseStatistics, DatabaseVacancies, Statistics
+from database import CollectionStatistics, CollectionVacancies, Statistics
 
 STOPWORDS_DIR = Path("techtrendanalysis/stopwords")
 
 
-class Wrangler(DatabaseVacancies):
+class Wrangler(CollectionVacancies):
     """Clean up the provided vacancy text and extract technology statistics."""
 
     def __init__(
@@ -91,13 +91,13 @@ class Wrangler(DatabaseVacancies):
     @staticmethod
     def save_statistics(statistics: Statistics, *, to_db: bool = True) -> BulkWriteResult | Any:
         if to_db:
-            db = DatabaseStatistics()
+            db = CollectionStatistics()
             collection = db.connect_collection()
             bulk_write_result = collection.bulk_write(db.create_replacements([statistics]))
             db.client.close()
             return bulk_write_result
 
-        file = Path(f"{DatabaseStatistics.collection}.csv")
+        file = Path(f"{CollectionStatistics.collection}.csv")
         file_exists = file.exists()
         fieldnames = Statistics.model_fields.keys()
         with file.open("a") as fp:

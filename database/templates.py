@@ -3,14 +3,14 @@ from typing import Any, ClassVar
 
 from pydantic import BaseModel
 from pymongo import ASCENDING, DESCENDING, ReplaceOne
-from pymongo.collection import Collection
+from pymongo.collection import Collection as DefaultCollection
 from scrapy.utils.project import get_project_settings
 
 from database.client import MongoClientSingleton
 
 
-class Database:
-    """Database template for inheritance.
+class Collection:
+    """Collection template for inheritance.
 
     NOTE: Do not forget to close the client after calling
     the `connect_collection` method.
@@ -23,7 +23,7 @@ class Database:
 
     settings = get_project_settings()
 
-    def connect_collection(self) -> Collection:
+    def connect_collection(self) -> DefaultCollection:
         self.client = MongoClientSingleton(
             is_test=self.settings["IS_TEST"],
             cluster_host=self.settings["MONGODB_CLUSTER_HOST"],
@@ -47,7 +47,7 @@ class Database:
         return replacements
 
 
-class DatabaseVacancies(Database):
+class CollectionVacancies(Collection):
     database = "vacancy_statistics"
     collection = "vacancies"
     indices: ClassVar[list[tuple[str, int]]] = [
@@ -79,7 +79,7 @@ class DatabaseVacancies(Database):
             return list(vacancies)
 
 
-class DatabaseStatistics(Database):
+class CollectionStatistics(Collection):
     database = "vacancy_statistics"
     collection = "statistics"
     indices: ClassVar[list[tuple[str, int]]] = [("category", ASCENDING), ("technology_frequency", ASCENDING)]
