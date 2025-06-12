@@ -1,4 +1,5 @@
 import csv
+import logging
 import re
 from collections import Counter
 from datetime import UTC, datetime, timedelta
@@ -15,13 +16,23 @@ from database import CollectionStatistics, CollectionVacancies, Statistics
 STOPWORDS_DIR = Path("techtrendanalysis/stopwords")
 
 
-class Wrangler:
+class Logging:
+    def __init__(self, name: str = __name__) -> None:
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+        self.logger.addHandler(handler)
+
+
+class Wrangler(Logging):
     """Clean up the provided vacancy text and extract technology statistics."""
 
     def __init__(self, category: str, extra_filters: set[str] | None = None) -> None:
         """If the `text` is not passed, it will be retrieved from the
         vacancies in MongoDB.
         """
+        super().__init__(__class__.__name__)
         self._text: str
         self._category = category
         self._extra_filters = extra_filters or set()
@@ -33,9 +44,11 @@ class Wrangler:
         self._stopwords = set(loads(ukr_stopwords.read_text()) + loads(common_words.read_text()))
 
     def _clean_text(self) -> None:
+        self.logger.debug("Cleaning text ...")
         to_filter = {"<br>", "<b>", "</b>", "• ", "- "}.union(self._extra_filters)
         pattern = re.compile(rf"{'|'.join(to_filter)}", flags=re.IGNORECASE)
         self._text = re.sub(pattern, " ", self._text)
+        self.logger.debug("Text cleaned")
 
     def extract_text_from_vacancies(
         self,
@@ -47,6 +60,9 @@ class Wrangler:
         self._from_datetime = from_datetime
         self._to_datetime = to_datetime
 
+        self.logger.debug(
+            "Extracting vacancies text in range from_datetime=%s, to_datetime=%s", from_datetime, to_datetime
+        )
         if from_mongodb_collection:
             with CollectionVacancies() as collection_vacancies:
                 vacancies = collection_vacancies.fetch_vacancies(self._category, from_datetime, to_datetime)
@@ -64,10 +80,12 @@ class Wrangler:
                         and self._category == row["category"]
                     ):
                         self._text += row["description"]
+        self.logger.debug("Text extracted")
 
     def calculate_frequency_distribution(self, limit_results: int = 20) -> Statistics:
         self._clean_text()
 
+        self.logger.debug("Calculating frequency distribution ...")
         nlp = spacy.load("en_core_web_sm")  # Load the spaCy model.
         doc = nlp(self._text)  # Process the text with spaCy.
 
@@ -86,6 +104,7 @@ class Wrangler:
 
         proper_nouns_count = Counter(proper_nouns)
         now = datetime.now(UTC)
+        self.logger.debug("Calculation complete")
         return Statistics(
             category=self._category,
             from_datetime=now - self._from_datetime,
@@ -97,11 +116,12 @@ class Wrangler:
             upsert_datetime=datetime.now(ZoneInfo("Europe/Kyiv")),
         )
 
-    @staticmethod
-    def save_statistics(statistics: Statistics, *, to_mongodb_collection: bool = True) -> BulkWriteResult | Any:
+    def save_statistics(self, statistics: Statistics, *, to_mongodb_collection: bool = True) -> BulkWriteResult | Any:
         """Save statistics to the MongoDB collection file.
         If `to_mongodb_collection` is False, then the statistics will be saved to a CSV file.
         """
+        log_message = f"Saving statistics {to_mongodb_collection=}: {statistics=}"
+        self.logger.debug(log_message)
         if to_mongodb_collection:
             with CollectionStatistics() as collection_statistics:
                 return collection_statistics.bulk_upsert(("from_datetime", "to_datetime"), items=[statistics])
