@@ -1,5 +1,4 @@
 from datetime import UTC, datetime, timedelta
-from os import getenv
 from typing import Any, ClassVar
 
 from pydantic import BaseModel
@@ -27,11 +26,11 @@ class Database:
     def connect_collection(self) -> Collection:
         self.client = MongoClientSingleton(
             is_test=self.settings["IS_TEST"],
-            cluster_host=getenv("MONGODB_CLUSTER_HOST"),
-            host=getenv("MONGODB_HOST"),
-            port=int(port) if (port := getenv("MONGODB_PORT")) else None,
-            username=getenv("MONGODB_USERNAME"),
-            password=getenv("MONGODB_PASSWORD"),
+            cluster_host=self.settings["MONGODB_CLUSTER_HOST"],
+            host=self.settings["MONGODB_HOST"],
+            port=self.settings["MONGODB_PORT"],
+            username=self.settings["MONGODB_USERNAME"],
+            password=self.settings["MONGODB_PASSWORD"],
         )
         collection = self.client[self.database][self.collection]
         collection.create_index(self.indices, unique=True)
