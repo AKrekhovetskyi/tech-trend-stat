@@ -1,3 +1,5 @@
+import json
+import logging
 from collections.abc import AsyncIterator, Generator
 from datetime import datetime
 from typing import Any, ClassVar
@@ -5,10 +7,10 @@ from urllib.parse import quote_plus
 from zoneinfo import ZoneInfo
 
 import scrapy
-from parsel.selector import Selector
+from parsel.selector import Selector, SelectorList
 from scrapy.http import Request, Response
 
-from database import VacancyItem
+from database import InteractionStats, VacancyItem
 
 
 class NotFoundError(Exception): ...
@@ -24,7 +26,11 @@ class DjinniSpider(scrapy.Spider):
     allowed_domains: ClassVar[list[str]] = ["djinni.co"]  # type: ignore[reportIncompatibleVariableOverride]
     start_urls: ClassVar[list[str]] = ["https://djinni.co/jobs/"]  # type: ignore[reportIncompatibleVariableOverride]
     categories = "Python"
-    category: str
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.category: str
+        self.job_offers: dict[int, dict[str, Any]] = {}
+        super().__init__(*args, **kwargs)
 
     async def start(self) -> AsyncIterator[Request]:
         for url in self.start_urls:
@@ -35,37 +41,72 @@ class DjinniSpider(scrapy.Spider):
                     dont_filter=True,
                 )
 
-    @staticmethod
-    def css_get(selector: Selector, query: str) -> str:
-        if not (selector_list := selector.css(query)):
-            raise NotFoundError(query)
-        return selector_list[0].get()
+    def _extract_job_offers(self, selector: SelectorList) -> None:
+        json_text = selector.xpath('//script[@type="application/ld+json"]/text()').get()
 
-    def _parse_job_item(self, selector: Selector) -> VacancyItem:
-        years_of_experience, company_type = 0, None
-        for job_info in selector.css(".job-list-item__job-info span::text"):
-            if experience := job_info.re(r"\b(\d+)\b"):
-                years_of_experience = int(experience[0])
-            if "Product" in job_info.get():
-                company_type = "Product"
-        statistics = selector.css("span.text-muted span.nobr .mr-2::attr(title)")
-        publication_date = self.css_get(selector, "span.text-muted span.mr-2.nobr::attr(title)")
-        return VacancyItem(
-            source=self.name,
-            category=self.category,
-            company_name=self.css_get(selector, "header a.mr-2::text").strip(),
-            company_type=company_type or "Outsource/staff",
-            description=self.css_get(selector, ".job-list-item__description span::attr(data-original-text)"),
-            years_of_experience=years_of_experience,
-            publication_date=datetime.strptime(publication_date, "%H:%M %d.%m.%Y").replace(
-                tzinfo=ZoneInfo("Europe/Kyiv")
-            ),
-            views=int(statistics[0].get().split()[0]),
-            applications=int(statistics[1].get().split()[0]),
-        )
+        if not json_text:
+            raise ValueError(f"{json_text=}")
+        for offer in json.loads(json_text):
+            application_location = offer.get("applicantLocationRequirements")
+            if isinstance(application_location, list):
+                address = offer["applicantLocationRequirements"][0]["address"]
+            elif isinstance(application_location, dict):
+                address = offer["applicantLocationRequirements"]["address"]
+            else:
+                address = {}
+
+            try:
+                self.job_offers[offer["identifier"]] = {
+                    "address": address.get("addressCountry")
+                    or address.get("addressLocality")
+                    or address.get("addressRegion")
+                    or address.get("postalCode"),
+                    "publication_date": offer["datePosted"],
+                    "description": offer["description"],
+                    "years_of_experience": round(
+                        offer.get("experienceRequirements", {"monthsOfExperience": 0})["monthsOfExperience"] / 12, 2
+                    ),
+                    "company_name": None
+                    if isinstance(offer["hiringOrganization"], str)
+                    else offer["hiringOrganization"]["name"],
+                    "title": offer["title"],
+                    "url": offer["url"],
+                }
+            except (KeyError, TypeError):
+                self.log(f"{offer=}", level=logging.ERROR)
+                raise
+
+    def _parse_interaction_stats(self, selector: Selector) -> InteractionStats:
+        views_text = selector.css("span.text-nowrap:contains('перегляд')::text").re_first(r"(\d+)")
+        if not views_text:
+            raise ValueError(f"{views_text=}, {selector=!s}")
+
+        applications_text = selector.css("span.text-nowrap:contains('відгук')::text").re_first(r"(\d+)")
+        if not applications_text:
+            raise ValueError(f"{applications_text=}, {selector=!s}")
+
+        return InteractionStats(views=int(views_text), applications=int(applications_text))
 
     def parse(self, response: Response) -> Generator[Request | VacancyItem, Any]:
-        for job_item in response.css("ul .list-jobs__item"):
-            yield self._parse_job_item(job_item)
+        self._extract_job_offers(response.css("head"))
+        for job_item in response.css("ul.list-jobs li[id*='job-item']"):
+            interaction_stats = self._parse_interaction_stats(job_item)
+            identifier = int(job_item.attrib["id"].split("-")[-1])
+            offer = self.job_offers[identifier]
+            yield VacancyItem(
+                source=self.name,
+                category=self.category,
+                company_name=offer["company_name"],
+                address=offer["address"],
+                title=offer["title"],
+                description=offer["description"],
+                years_of_experience=offer["years_of_experience"],
+                publication_date=datetime.fromisoformat(offer["publication_date"]).replace(
+                    tzinfo=ZoneInfo("Europe/Kyiv")
+                ),
+                url=offer["url"],
+                views=interaction_stats.views,
+                applications=interaction_stats.applications,
+            )
         if (next_page := response.css(".pagination li.active + li a")) and (link := next_page[0].attrib.get("href")):
             yield response.follow(link, callback=self.parse)
