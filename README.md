@@ -5,10 +5,9 @@
 ## Features
 
 - [Scraping jobs from Djinni](techtrendscrape/spiders/djinni.py) by several specialization categories (e.g. Python, Java, DevOps, etc.).
-- [Mongo client singleton](database/client.py).
 - Ability to work with local and cloud MongoDB, as well as with regular CSV files.
 - Using [`Pydantic` models](database/models.py) instead of standard items for better data validation.
-- [Database templates](database/templates.py) to simplify connection to MongoDB.
+- [Database collections](database/collections.py) to simplify connection to MongoDB.
 - [Two pipelines](techtrendscrape/pipelines.py) (Mongo and CSV).
 - [CSV pipeline](techtrendscrape/crawler.py) that covers the entire ETL process.
 - [Data Wrangling](techtrendanalysis/wrangler.py). Clean up text and extract technology statistics.
@@ -55,7 +54,12 @@ uv run scrapy crawl djinni -a categories="Python"
 
 You can substitute "Python" for any other category, or a stack of categories separated by a " | ". See available specializations (categories) on the Djinni website.
 
-To extract statistics from job descriptions, run the [`wrangler`](techtrendanalysis/wrangler.py) file, passing the desired category name.
+To extract statistics from job descriptions, run the [`wrangler`](techtrendanalysis/wrangler.py) file, passing the desired category name:
+
+```bash
+uv run spacy download en_core_web_sm
+uv run python3.13 -m techtrendanalysis.wrangler
+```
 
 ### CSV File
 
