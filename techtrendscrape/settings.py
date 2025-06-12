@@ -8,7 +8,7 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from datetime import timedelta
-from os import environ
+from os import environ, getenv
 
 BOT_NAME = "techtrendscrape"
 
@@ -94,3 +94,9 @@ HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
 # Set settings whose default value is deprecated to a future-proof value
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+MONGODB_HOST = getenv("MONGODB_HOST") or None
+MONGODB_PORT = int(port) if (port := getenv("MONGODB_PORT")) else None
+MONGODB_USERNAME = getenv("MONGODB_USERNAME") or None
+MONGODB_PASSWORD = getenv("MONGODB_PASSWORD") or None
+MONGODB_CLUSTER_HOST = getenv("MONGODB_CLUSTER_HOST") or None
