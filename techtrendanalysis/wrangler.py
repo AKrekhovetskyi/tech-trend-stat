@@ -28,7 +28,7 @@ class Wrangler:
         """
         self._category = category
         self._extra_filters = extra_filters or set()
-        self._from_datetime: timedelta = timedelta(days=0)
+        self._from_datetime: timedelta = timedelta(days=30)
         self._to_datetime: timedelta = timedelta(days=0)
 
         ukr_stopwords = STOPWORDS_DIR / "ukrainian-stopwords.json"
