@@ -10,14 +10,14 @@ import csv
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from database import DatabaseVacancies, VacancyItem
+from database import CollectionVacancies, VacancyItem
 from techtrendscrape.spiders.djinni import DjinniSpider
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
 
 
-class MongoPipeline(DatabaseVacancies):
+class MongoPipeline(CollectionVacancies):
     def __init__(self) -> None:
         super().__init__()
         self.items: list[BaseModel] = []

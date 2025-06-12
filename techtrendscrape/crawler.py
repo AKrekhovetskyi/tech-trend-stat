@@ -4,7 +4,7 @@ from pathlib import Path
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
-from database import DatabaseVacancies, Statistics
+from database import CollectionVacancies, Statistics
 from techtrendanalysis.wrangler import Wrangler
 
 
@@ -40,7 +40,7 @@ class CrawlToCSV:
         statistics and save it to the `statistics.csv`.
         """
         # Collect vacancy descriptions.
-        with Path(f"{DatabaseVacancies.collection}.csv").open() as csv_file:
+        with Path(f"{CollectionVacancies.collection}.csv").open() as csv_file:
             reader = csv.DictReader(csv_file)
             descriptions = " ".join([item["description"] for item in reader])
 
