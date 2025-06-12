@@ -9,17 +9,16 @@
 - Using [`Pydantic` models](database/models.py) instead of standard items for better data validation.
 - [Database collections](database/collections.py) to simplify connection to MongoDB.
 - [Two pipelines](techtrendscrape/pipelines.py) (Mongo and CSV).
-- [CSV pipeline](techtrendscrape/crawler.py) that covers the entire ETL process.
 - [Data Wrangling](techtrendanalysis/wrangler.py). Clean up text and extract technology statistics.
 
 ## Linux Installation
 
-> **NOTE:** Python version >3.8 is required.
+> **NOTE:** Python version >3.9 is required.
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/AndriyKy/tech-trend-stat.git
+git clone --recurse-submodules https://github.com/AndriyKy/tech-trend-stat.git
 cd tech-trend-stat
 ```
 
@@ -40,11 +39,7 @@ cp .env.sample .env
 
 ## Getting Started
 
-### MongoDB
-
-If you decide to work with MongoDB, here is a [tutorial](https://sparkbyexamples.com/mongodb/run-mongodb-in-docker-container/) on how to install it locally in a Docker container.
-
-Here is also the [instruction](https://www.mongodb.com/docs/atlas/create-connect-deployments/) on how to create a cluster on the cloud.
+If you decide to work with MongoDB, here is a [tutorial](https://sparkbyexamples.com/mongodb/run-mongodb-in-docker-container/) on how to install it locally in a Docker container. Here is also the [instruction](https://www.mongodb.com/docs/atlas/create-connect-deployments/) on how to create a cluster on the cloud.
 
 Once the database has been successfully installed, you just need to run the following command to scrape the vacancies using the `scrapy` spider along with the Mongo pipeline:
 
@@ -52,7 +47,9 @@ Once the database has been successfully installed, you just need to run the foll
 uv run scrapy crawl djinni -a categories="Python"
 ```
 
-You can substitute "Python" for any other category, or a stack of categories separated by a " | ". See available specializations (categories) on the Djinni website.
+To scrape the vacancies into a CSV file, comment out all the `MONGODB_*` environment variables and run the command above.
+
+You can substitute "Python" for any other category, or a stack of categories separated by a " | ". See available specializations (categories) on the [Djinni](https://djinni.co/jobs) website.
 
 To extract statistics from job descriptions, run the [`wrangler`](techtrendanalysis/wrangler.py) file, passing the desired category name:
 
@@ -61,13 +58,10 @@ uv run spacy download en_core_web_sm
 uv run python3.13 -m techtrendanalysis.wrangler
 ```
 
-### CSV File
-
-If you can't install MongoDB, just run the [`crawler`](techtrendscrape/crawler.py) script. It will scrape jobs in the category you passed and save them to the appropriate CSV file. After that, it will pull job descriptions from the generated file, extract the technology stack and write it to another CSV file.
-
 ## Data Analysis
 
 To see the visualization of the extracted statistics, please, head over to the [`analysis`](techtrendanalysis/analysis.ipynb) file and follow the instructions given there.
 
 Here is an example of a visualized result
+
 ![Python technology statistics](techtrendanalysis/python_tech_statistics.png)
