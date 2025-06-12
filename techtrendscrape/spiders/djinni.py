@@ -1,4 +1,4 @@
-from collections.abc import Generator, Iterable
+from collections.abc import AsyncIterator, Generator
 from datetime import datetime
 from typing import Any, ClassVar
 from urllib.parse import quote_plus
@@ -26,7 +26,7 @@ class DjinniSpider(scrapy.Spider):
     categories = "Python"
     category: str
 
-    def start_requests(self) -> Iterable[Request]:
+    async def start(self) -> AsyncIterator[Request]:
         for url in self.start_urls:
             for primary_keyword in self.categories.split(" | "):
                 self.category = primary_keyword
