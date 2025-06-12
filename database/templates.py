@@ -41,7 +41,7 @@ class Database:
         index_fields = [index[0] for index in self.indices]
         replacements = []
         for item in items:
-            dumped_item = item.model_dump()
+            dumped_item = item.model_dump(mode="json")
             indices = {index: dumped_item[index] for index in index_fields}
             replacements.append(ReplaceOne(indices, dumped_item, upsert=True))
         return replacements
@@ -51,8 +51,8 @@ class DatabaseVacancies(Database):
     database = "vacancy_statistics"
     collection = "vacancies"
     indices: ClassVar[list[tuple[str, int]]] = [
+        ("category", ASCENDING),
         ("publication_date", DESCENDING),
-        ("company_name", ASCENDING),
         ("years_of_experience", ASCENDING),
     ]
 
