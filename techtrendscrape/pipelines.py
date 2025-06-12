@@ -29,7 +29,7 @@ class Pipeline:
 class MongoPipeline(Pipeline):
     def close_spider(self, _: DjinniSpider) -> None:
         with CollectionVacancies() as vacancies:
-            vacancies.collection.bulk_write(vacancies.create_replacements(self.items))
+            vacancies.bulk_upsert(("url",), items=self.items)
 
 
 class CSVPipeline(Pipeline):

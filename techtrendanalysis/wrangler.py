@@ -91,9 +91,7 @@ class Wrangler:
     def save_statistics(statistics: Statistics, *, to_db: bool = True) -> BulkWriteResult | Any:
         if to_db:
             with CollectionStatistics() as collection_statistics:
-                return collection_statistics.collection.bulk_write(
-                    collection_statistics.create_replacements([statistics])
-                )
+                return collection_statistics.bulk_upsert(("from_datetime", "to_datetime"), items=[statistics])
 
         file = Path(f"{CollectionStatistics.collection}.csv")
         file_exists = file.exists()
