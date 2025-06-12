@@ -1,50 +1,55 @@
-from typing import Any
+from typing import Any, ClassVar, Self
 
-from pymongo import MongoClient
+from pydantic import BaseModel
+from pymongo import MongoClient as DefaultMongoClient
+from pymongo import ReplaceOne
+from pymongo.collection import Collection
+from scrapy.utils.project import get_project_settings
 
 
-class MongoClientSingleton(MongoClient):
-    """Singleton class for MongoDB connection using MongoClient."""
+class MongoClient(DefaultMongoClient):
+    collection: Collection
+    collection_name: str
+    database_name: str
+    indexes: ClassVar[list[tuple[str, int]]]
 
-    _instance = None
+    settings = get_project_settings()
 
-    def __init__(
-        self,
-        *,
-        is_test: bool,
-        cluster_host: str | None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        Connect to a local MongoDB if `is_test` is `True`.
-        Otherwise, connect to a Mongo cloud.
-        """
-        if not is_test:
-            self._validate_production_params(cluster_host=cluster_host, **kwargs)
-            client_kwargs = kwargs | {
-                "host": f"mongodb+srv://{kwargs.pop('username')}:"
-                f"{kwargs.pop('password')}@{cluster_host}.mongodb.net/?retryWrites=true&w=majority"
-            }
+    def __init__(self, **kwargs: Any) -> None:
+        if self.settings["IS_TEST"]:
+            super().__init__(
+                host=self.settings["MONGODB_HOST"],
+                port=self.settings["MONGODB_PORT"],
+                username=self.settings["MONGODB_USERNAME"],
+                password=self.settings["MONGODB_PASSWORD"],
+                **kwargs,
+            )
         else:
-            client_kwargs = kwargs
-        super().__init__(**client_kwargs)
+            if (
+                not self.settings["MONGODB_USERNAME"]
+                or not self.settings["MONGODB_PASSWORD"]
+                or not self.settings["MONGODB_CLUSTER_HOST"]
+            ):
+                raise ValueError("`username`, `password`, and `cluster_host` are required in a production environment.")
 
-    def __new__(cls, **_: Any) -> "MongoClientSingleton":
-        """
-        Create a new instance if it doesn't exist,
-        otherwise return the existing one.
-        """
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
+            kwargs = kwargs | {
+                "host": f"mongodb+srv://{self.settings['MONGODB_USERNAME']}:{self.settings['MONGODB_PASSWORD']}"
+                f"@{self.settings['MONGODB_CLUSTER_HOST']}.mongodb.net/"
+            }
+            super().__init__(**kwargs)
 
-    @staticmethod
-    def _validate_production_params(**kwargs: Any) -> None:
-        """Validate required parameters for the production environment."""
-        if "username" not in kwargs or "password" not in kwargs or "cluster_host" not in kwargs:
-            raise ValueError("`username`, `password`, and `cluster_host` are required in a production environment.")
+    def __enter__(self) -> Self:
+        super().__enter__()
+        self.collection = self.get_database(self.database_name)[self.collection_name]
+        self.collection.create_index(self.indexes, unique=True)
+        return self
 
-    def close(self) -> None:
-        """Close the MongoDB connection and reset the instance."""
-        self._instance = None
-        return super().close()
+    def create_replacements(self, items: list[BaseModel]) -> list[ReplaceOne]:
+        """Request replacements for `bulk_write` operation."""
+        index_fields = [index[0] for index in self.indexes]
+        replacements = []
+        for item in items:
+            dumped_item = item.model_dump(mode="json")
+            indexes = {index: dumped_item[index] for index in index_fields}
+            replacements.append(ReplaceOne(indexes, dumped_item, upsert=True))
+        return replacements
