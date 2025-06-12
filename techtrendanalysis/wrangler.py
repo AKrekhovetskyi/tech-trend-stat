@@ -14,7 +14,7 @@ from database import CollectionStatistics, CollectionVacancies, Statistics
 STOPWORDS_DIR = Path("techtrendanalysis/stopwords")
 
 
-class Wrangler(CollectionVacancies):
+class Wrangler:
     """Clean up the provided vacancy text and extract technology statistics."""
 
     def __init__(
@@ -52,10 +52,9 @@ class Wrangler(CollectionVacancies):
     ) -> None:
         self._from_datetime = from_datetime
         self._to_datetime = to_datetime
-        self.connect_collection()
-        vacancies = self.fetch_vacancies(self._category, from_datetime, to_datetime)
-        self._text = " ".join([vacancy["description"] for vacancy in vacancies])
-        self.client.close()
+        with CollectionVacancies() as collection_vacancies:
+            vacancies = collection_vacancies.fetch_vacancies(self._category, from_datetime, to_datetime)
+            self._text = " ".join([vacancy["description"] for vacancy in vacancies])
 
     def calculate_frequency_distribution(self, limit_results: int = 20) -> Statistics:
         self._clean_text()
@@ -91,11 +90,10 @@ class Wrangler(CollectionVacancies):
     @staticmethod
     def save_statistics(statistics: Statistics, *, to_db: bool = True) -> BulkWriteResult | Any:
         if to_db:
-            db = CollectionStatistics()
-            collection = db.connect_collection()
-            bulk_write_result = collection.bulk_write(db.create_replacements([statistics]))
-            db.client.close()
-            return bulk_write_result
+            with CollectionStatistics() as collection_statistics:
+                return collection_statistics.collection.bulk_write(
+                    collection_statistics.create_replacements([statistics])
+                )
 
         file = Path(f"{CollectionStatistics.collection}.csv")
         file_exists = file.exists()
