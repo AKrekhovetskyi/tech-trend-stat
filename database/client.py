@@ -55,7 +55,7 @@ class MongoClient(DefaultMongoClient):
         update_one_kwargs = {"upsert": True} | update_one_kwargs if update_one_kwargs else {"upsert": True}
         items_to_upsert = []
         for item in items:
-            dumped_model = item.model_dump(mode="json")
+            dumped_model = item.model_dump(mode="json", exclude_none=True)
             filter_ = {field: dumped_model[field] for field in filter_fields}
             items_to_upsert.append(ReplaceOne(filter_, dumped_model, **update_one_kwargs))
         return self.collection.bulk_write(items_to_upsert, **bulk_write_kwargs or {})
