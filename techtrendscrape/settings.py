@@ -67,7 +67,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "techtrendscrape.pipelines.MongoPipeline": 300,
+    "techtrendscrape.pipelines.MongoPipeline": 1,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -100,3 +100,6 @@ MONGODB_PORT = int(port) if (port := getenv("MONGODB_PORT")) else None
 MONGODB_USERNAME = getenv("MONGODB_USERNAME") or None
 MONGODB_PASSWORD = getenv("MONGODB_PASSWORD") or None
 MONGODB_CLUSTER_HOST = getenv("MONGODB_CLUSTER_HOST") or None
+
+if not MONGODB_HOST and not MONGODB_PORT and not MONGODB_USERNAME and not MONGODB_PASSWORD and not MONGODB_CLUSTER_HOST:
+    ITEM_PIPELINES = {"techtrendscrape.pipelines.CSVPipeline": 1}
