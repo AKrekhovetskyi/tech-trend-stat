@@ -26,3 +26,4 @@ class Statistics(BaseModel):
     from_datetime: datetime
     to_datetime: datetime
     technology_frequency: dict[str, int]
+    upsert_datetime: datetime

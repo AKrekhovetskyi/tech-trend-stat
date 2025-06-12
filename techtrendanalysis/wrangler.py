@@ -94,6 +94,7 @@ class Wrangler:
                 lower_to_upper[noun_frequency[0]]: noun_frequency[1]
                 for noun_frequency in proper_nouns_count.most_common(limit_results)
             },
+            upsert_datetime=datetime.now(ZoneInfo("Europe/Kyiv")),
         )
 
     @staticmethod
