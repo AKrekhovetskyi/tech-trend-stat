@@ -28,14 +28,14 @@ class Logging:
 class Wrangler(Logging):
     """Clean up the provided vacancy text and extract technology statistics."""
 
-    def __init__(self, category: str, extra_filters: set[str] | None = None) -> None:
+    def __init__(self, category: str, extra_text_filters: set[str] | None = None) -> None:
         """If the `text` is not passed, it will be retrieved from the
         vacancies in MongoDB.
         """
         super().__init__(__class__.__name__)
         self._text: str
         self._category = category
-        self._extra_filters = extra_filters or set()
+        self._extra_filters = extra_text_filters or set()
         self._from_datetime: timedelta
         self._to_datetime: timedelta
 
