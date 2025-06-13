@@ -55,21 +55,22 @@ class Wrangler(Logging):
         *,
         from_datetime: timedelta = timedelta(days=30),
         to_datetime: timedelta = timedelta(days=0),
-        from_mongodb_collection: bool = True,
+        path_to_csv: Path | None = None,
     ) -> None:
+        """Extract vacancy descriptions from a MongoDB collection if no `path_to_csv` argument provided."""
         self._from_datetime = from_datetime
         self._to_datetime = to_datetime
 
         self.logger.debug(
             "Extracting vacancies text in range from_datetime=%s, to_datetime=%s", from_datetime, to_datetime
         )
-        if from_mongodb_collection:
+        if not path_to_csv:
             with CollectionVacancies() as collection_vacancies:
                 vacancies = collection_vacancies.fetch_vacancies(self._category, from_datetime, to_datetime)
                 self._text = " ".join([vacancy["description"] for vacancy in vacancies])
         else:
             now = datetime.now(ZoneInfo("Europe/Kyiv"))
-            with Path(f"{CollectionVacancies.collection_name}.csv").open() as csv_file:
+            with path_to_csv.open() as csv_file:
                 reader = csv.DictReader(csv_file)
                 self._text = ""
                 for row in reader:
