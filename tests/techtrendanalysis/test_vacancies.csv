@@ -1,0 +1,154 @@
+views,applications,source,category,company_name,address,title,description,years_of_experience,publication_date,url
+13,1,djinni,Python,Onseo,UA,Провідний Python інженер /Senior Python Engineer,"Ми шукаємо Python інженера рівня Senior в команду проєкту jay (Німеччина), що досліджує та розробляє найсучасніші медіа-технології для кіно, телебачення та відео-стрімінгу.
+Тривалість роботи у проекті — 3 місяці з можливістю продовження співпраці.
+
+Технічні навички
+Від 5 років досвіду бекенд-розробки на Python;
+Професійний досвід у розробці та реалізації RESTful API;
+Знання реляційних баз даних (MySQL, PostgreSQL);
+Досвід роботи з графовими базами даних (особливо Amazon Neptune);
+Досвід написання сценаріїв та автоматизації на Bash;
+Досвід роботи з Git’ом для контролю версій;
+Знання протоколів аутентифікації API (OAuth 2.0, ключі API);
+Професійні навички розбору та перетворення даних JSON/XML.
+
+Знання специфіки домену
+Досвід інтеграції з API ринків електронної комерції (наприклад, Amazon SP-API, eBay, Shopify);
+Розуміння синхронізації даних про запаси, замовлення та продукти;
+Поінформованість про обмеження тарифів, веб-хуки та проблеми узгодженості даних;
+Розуміння багатоканальних платформ продажів і OMS (системами управління замовленнями)
+Базове розуміння процесів оподаткування, доставки та виконання замовлень.
+
+Архітектура та DevOps
+Веб: Django або FastAPI або Flask
+Досвід роботи з хмарною платформою AWS (EC2, Lambda, S3, Neptune тощо)
+Розуміння конвеєрів CI/CD та кращих практик DevOps;
+Досвід роботи з Docker та Kubernetes для контейнеризації та оркестрування;
+Знання черг повідомлень (наприклад, SQS, RabbitMQ, ElasticSearch) та асинхронної обробки;
+Здатність проєктувати масштабовані, відмовостійкі бекенд-системи;
+Досвід моніторингу та ведення журналів за допомогою таких інструментів, як CloudWatch, ELK або Prometheus.
+
+Ми пропонуємо:
+Роботу над унікальним продуктом у сфері інноваційних медіа;
+Гнучкий формат зайнятості та графіку;
+Міжнародну команду та мультикультурне середовище.
+
+Про проєкт:
+Заснована на культовому знімальному майданчику Бабельсберг у 2022 році, після років досліджень і розробок та за підтримки міжнародної технологічної інвестиційної компанії, Тransfermedia production services запустила jay — новаторську технологію метаданих для кіно. Це технологічне рішення дає глядачам абсолютно новий досвід перегляду фільмів у потоковому режимі та створює нові бізнес-можливості для стрімерів і платформ VoD, від інформаційно-розважального контенту до онлайн-покупок.
+
+EN
+
+We are looking for a Senior Python Engineer to join the jay project development team (Germany), which researches and develops state-of-the-art media technologies for film, television, and video streaming.
+The work in the project will run for 3 months with the possibility of prolongation.
+
+Tech Skills
+5+ years of backend development experience with Python;
+Strong experience in RESTful API design and implementation;
+Solid knowledge of relational databases (MySQL, PostgreSQL);
+Proficiency in graph databases (especially Amazon Neptune);
+Experience with Bash scripting and automation;
+Proficiency with Git for version control;
+Familiarity with API authentication protocols (OAuth 2.0, API keys);
+Strong skills in JSON/XML data parsing and transformation.
+
+Domain-Specific Knowledge
+Web: Django or FastAPI or Flask
+Experience integrating with e-commerce marketplace APIs (e.g., Amazon SP-API, eBay, Shopify);
+Understanding of inventory, order, and product data synchronization;
+Awareness of rate limits, webhooks, and data consistency challenges;
+Understanding multi-channel selling platforms and OMS (Order Management Systems);
+Basic understanding of tax, shipping, and fulfillment workflows.
+
+Architecture & DevOps
+Experience with the AWS cloud platform (EC2, Lambda, S3, Neptune, etc.);
+Understanding of CI/CD pipelines and DevOps best practices;
+Experience with Docker and Kubernetes for containerization and orchestration;
+Knowledge of message queues (e.g., SQS, RabbitMQ, ElasticSearch) and asynchronous processing;
+Ability to design scalable, fault-tolerant backend systems;
+Monitoring and logging experience with tools like CloudWatch, ELK, or Prometheus.
+
+We Offer:
+Work on a unique and innovative media-tech product;
+Flexible work format and scheduling;
+International, multicultural team.
+
+About the Project:
+Founded and based at the iconic film location Babelsberg, Transfermedia production services is researching and developing state-of-the-art media technologies for film, TV and streaming. In 2022, after years of research and development and with the support of an international tech investment company, Transfermedia launched jay — a pioneering metadata technology for film. Our tech solution enables a whole new in-stream experience for audiences and creates novel business opportunities for broadcasters and VoD platforms. From infotainment to in-stream shopping.
+
+Надсилаючи своє резюме, Ви тим самим даєте згоду на обробку своїх особистих персональних даних відповідно до Закону України «Про захист персональних даних» від 01.06.2010 р. № 2297-VІ з метою потенційної подальшої співпраці.
+",5.0,2025-06-12 17:23:05.019886+03:00,https://djinni.co/jobs/744659-providnii-python-inzhener-senior-python-engin/
+12,1,djinni,Python,Akvelon,POL,Backend Software Engineer,"🌎Akvelon is an American company with offices in Seattle, Mexico, Ukraine, Poland, and Serbia etc. Our company is an official vendor of Microsoft and Google. Our clients also include Amazon, Evernote, Intel, HP, Reddit, Pinterest, AT&T, T-Mobile, Starbucks, and LinkedIn. To work with Akvelon means to be connected with the best and brightest engineering teams from around the globe and working with an actual technology stack building Enterprise, CRM, LOB, Cloud, AI and Machine Learning, Cross-Platform, Mobile, and other types of applications customized to client’s needs and processes.
+We are seeking a talented Backend Software Engineer to join a team dedicated to building high-quality, scalable solutions. In this role, you will have the chance to work with modern technologies, enhance testing frameworks, and contribute to the continuous improvement of software quality. If you enjoy tackling complex challenges and working with cutting-edge tools, this position is for you.
+
+Responsibilities:
+Design and implement automation workflows to eliminate manual tasks in network operations
+Develop tooling and scripts to improve telemetry visibility and monitoring coverage
+Collaborate with stakeholders to gather requirements, develop low-level designs, and ship robust, testable features
+Perform root cause analysis and debugging of network automation tooling
+Support feature enhancements and maintenance of automation systems used in production workflows
+Integrate with network data sources and telemetry APIs to support observability pipelines
+
+
+Requirements:
+Python for backend or infrastructure systems
+Proven experience designing & operating automation systems for network or infrastructure environments
+Familiarity with data-analytics platforms (Databricks, BigQuery, Splunk, ELK)
+Hands-on work with time-series or telemetry data
+Nice to Have:
+
+Golang development experience
+Solid grasp of scalable software design patterns
+Understanding of security fundamentals for distributed systems
+Exposure to capacity modeling, forecasting, or planning in cloud environments
+Overlap time requirements:
+10 AM–6 PM CET (12 PM–8 PM CET twice a week)
+Working conditions and benefits:
+Paid vacation, sick leave (without sickness list)
+Official state holidays — 11 days considered public holidays
+Professional growth while attending challenging projects and the possibility to switch your role, master new technologies and skills with company support
+Flexible working schedule: 8 hours per day, 40 hours per week
+Personal Career Development Plan (CDP)
+Employee support program (Discount, Care, Health, Legal compensation)
+Paid external training, conferences, and professional certification that meets the company’s business goals
+Internal workshops & seminars
+Corporate library (Paper/E-books) and internal English classes.
+Interested in this opportunity? Apply now!
+",5.0,2025-06-12 16:57:04.030903+03:00,https://djinni.co/jobs/744644-backend-software-engineer/
+25,2,djinni,Python,:DTeam,UA,Middle Python Developer (Backend),"🔹 Middle Python Developer (Backend)
+
+We are looking for an experienced Middle Backend Developer (Python) to join our long-term project. This is a great opportunity to work with a stable team and make a direct impact on product development using modern technologies.
+
+🔧 Responsibilities:
+Develop and maintain backend logic for web applications
+Build and integrate RESTful APIs
+Work with PostgreSQL databases
+Ensure proper processing of static and media files using WhiteNoise
+Handle image manipulation tasks using Pillow
+Participate in code reviews, refactoring, and optimization
+Collaborate closely with the frontend developers and QA team
+
+
+✅ Requirements:
+3+ years of commercial software development experience
+Strong knowledge of Python and Django or FastAPI framework
+Hands-on experience with Docker Compose and PostgreSQL and ElasticSearch
+Experience with Pillow (image processing) and WhiteNoise (serving static files)
+Ability to write clean, maintainable, and testable code
+English level B1+ (Intermediate) — ability to communicate in a team and understand documentation
+
+
+✨ We Offer:
+Long-term cooperation and stable project environment
+Flexible work schedule and remote work opportunities
+Supportive team and open communication
+Clear processes and modern stack
+
+
+🛠 Recruitment Process:
+Recruiter Interview
+Test Task
+Technical Interview
+Final Interview with CEO
+Offer
+
+",3.0,2025-06-12 16:45:57.777529+03:00,https://djinni.co/jobs/744641-middle-python-developer-backend-/
