@@ -38,7 +38,8 @@ class DjinniSpider(scrapy.Spider):
                 self.category = primary_keyword
                 yield Request(
                     f"{url}?primary_keyword={quote_plus(primary_keyword)}",
-                    dont_filter=True,
+                    headers={"accept-language": "uk-UA,uk;q=0.9,en-US,en;q=0.8,ru;q=0.7"},
+                    meta={"proxy": self.settings["PROXY_URL"]} if self.settings["PROXY_URL"] else None,
                 )
 
     def _extract_job_offers(self, selector: SelectorList) -> None:
@@ -108,5 +109,11 @@ class DjinniSpider(scrapy.Spider):
                 views=interaction_stats.views,
                 applications=interaction_stats.applications,
             )
-        if (next_page := response.css(".pagination li.active + li a")) and (link := next_page[0].attrib.get("href")):
-            yield response.follow(link, callback=self.parse)
+        pagination = response.css("ul.pagination li.page-item")
+        if pagination:
+            last_li = pagination[-1]
+            link = last_li.css("a::attr(href)").get()
+            if link:
+                yield response.follow(link, callback=self.parse)
+        else:
+            self.log(f"No more pages found. URL of the last page: {response.url}", level=logging.INFO)
