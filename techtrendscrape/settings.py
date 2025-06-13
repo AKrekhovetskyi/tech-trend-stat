@@ -103,3 +103,5 @@ MONGODB_CLUSTER_HOST = getenv("MONGODB_CLUSTER_HOST") or None
 
 if not MONGODB_HOST and not MONGODB_PORT and not MONGODB_USERNAME and not MONGODB_PASSWORD and not MONGODB_CLUSTER_HOST:
     ITEM_PIPELINES = {"techtrendscrape.pipelines.CSVPipeline": 1}
+
+PROXY_URL = getenv("PROXY_URL")
