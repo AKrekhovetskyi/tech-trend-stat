@@ -6,11 +6,13 @@ from pymongo import ReplaceOne
 from pymongo.collection import BulkWriteResult, Collection
 from scrapy.utils.project import get_project_settings
 
+DATABASE_NAME = "techtrendstat"
+TEST_DATABASE_NAME = "test"
+
 
 class MongoClient(DefaultMongoClient):
     collection: Collection
     collection_name: str
-    database_name: str
     indexes: ClassVar[list[tuple[str, int]]]
 
     settings = get_project_settings()
@@ -43,6 +45,15 @@ class MongoClient(DefaultMongoClient):
         self.collection = self.get_database(self.database_name)[self.collection_name]
         self.collection.create_index(self.indexes, unique=True)
         return self
+
+    @property
+    def database_name(self) -> str:
+        """The `TEST_DATABASE_NAME` value is used if `IS_TEST` environment variable it True."""
+        return TEST_DATABASE_NAME if self.settings["IS_TEST"] else getattr(self, "_database_name", DATABASE_NAME)
+
+    @database_name.setter
+    def database_name(self, value: str) -> None:
+        self._database_name = value
 
     def bulk_upsert(
         self,
