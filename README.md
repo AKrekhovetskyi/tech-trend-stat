@@ -65,3 +65,18 @@ To see the visualization of the extracted statistics, please, head over to the [
 Here is an example of a visualized result
 
 ![Python technology statistics](techtrendanalysis/python_tech_statistics.png)
+
+## Contribution
+
+Install `pre-commit` script and hooks:
+
+```bash
+pre-commit install
+pre-commit install-hooks
+```
+
+Run tests after any modifications:
+
+```bash
+uv run coverage run -m pytest --show-capture=stdout --showlocals -vv -s -rA tests/
+```
