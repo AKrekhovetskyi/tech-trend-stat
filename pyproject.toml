@@ -15,6 +15,7 @@ dependencies = [
 
 [dependency-groups]
 test = [
+    "faker>=37.4.0",
     "pytest>=8.4.0",
     "pytest-cov>=6.2.1",
 ]
