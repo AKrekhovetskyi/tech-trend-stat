@@ -1,5 +1,7 @@
 import csv
+from datetime import datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pytest
 from faker import Faker
@@ -26,7 +28,13 @@ class TestWrangler:
 
     @pytest.fixture
     def wrangler(self) -> Wrangler:
-        return Wrangler(CATEGORY)
+        tzinfo = ZoneInfo("Europe/Kyiv")
+        crawling_datetime = datetime(2025, 6, 13, tzinfo=tzinfo)
+        return Wrangler(
+            CATEGORY,
+            start_from_publication_date=crawling_datetime - timedelta(days=30),
+            end_date_of_publication=crawling_datetime,
+        )
 
     def test__clean_text(self, wrangler: Wrangler) -> None:
         wrangler._text = (
