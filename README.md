@@ -54,7 +54,7 @@ You can substitute "Python" for any other category, or a stack of categories sep
 To extract statistics from job descriptions, run the [`wrangler`](techtrendanalysis/wrangler.py) file, passing the desired category name:
 
 ```bash
-uv run spacy download en_core_web_sm
+uv run spacy download en_core_web_md
 uv run python3.13 -m techtrendanalysis.wrangler
 ```
 
