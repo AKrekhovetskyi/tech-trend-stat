@@ -7,8 +7,7 @@ from faker import Faker
 
 from database import CollectionStatistics, Statistics, VacancyItem
 from techtrendanalysis.wrangler import Wrangler
-
-CATEGORY = "Python"
+from tests.conftest import CATEGORY
 
 
 class TestWrangler:

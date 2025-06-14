@@ -5,6 +5,8 @@ import pytest
 
 from database import TEST_DATABASE_NAME, CollectionVacancies, MongoClient, VacancyItem
 
+CATEGORY = "Python"
+
 
 @pytest.fixture(autouse=True, scope="session")
 def _drop_test_database() -> None:
