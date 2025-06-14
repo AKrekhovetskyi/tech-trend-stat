@@ -73,7 +73,7 @@ class TestWrangler:
             "PostgreSQL": 4,
             "Neptune": 4,
             "DevOps": 4,
-            "RESTful": 3,
+            "RESTful API": 3,
             "Django": 3,
             "FastAPI": 3,
             "Docker": 3,
