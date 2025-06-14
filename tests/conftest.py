@@ -26,4 +26,4 @@ def vacancy_items(test_vacancies: Path) -> list[VacancyItem]:
 @pytest.fixture
 def _upsert_vacancies_to_collection(vacancy_items: list[VacancyItem]) -> None:
     with CollectionVacancies() as collection_vacancies:
-        collection_vacancies.bulk_upsert(("url",), items=vacancy_items)  # type: ignore[reportArgumentType]
+        collection_vacancies.bulk_upsert(("url",), items=vacancy_items)

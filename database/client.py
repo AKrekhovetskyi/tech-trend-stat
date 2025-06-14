@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel
@@ -59,7 +60,7 @@ class MongoClient(DefaultMongoClient):
         self,
         filter_fields: tuple[str, ...],
         *,
-        items: list[BaseModel],
+        items: Sequence[BaseModel],
         bulk_write_kwargs: dict[str, Any] | None = None,
         update_one_kwargs: dict[str, Any] | None = None,
     ) -> BulkWriteResult:
