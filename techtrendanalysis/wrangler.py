@@ -1,3 +1,4 @@
+import argparse
 import csv
 import logging
 import re
@@ -148,9 +149,31 @@ class Wrangler(Logging):
             return writer.writerow(statistics.model_dump())
 
 
-if __name__ == "__main__":
-    CATEGORY = "Python"
-    wrangler = Wrangler(CATEGORY)
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Wrangle tech trend statistics.")
+    parser.add_argument(
+        "--category",
+        type=str,
+        required=True,
+        help="Vacancy category to analyze (e.g., Python, JavaScript, etc.)",
+    )
+    parser.add_argument(
+        "--extra-text-filters",
+        type=str,
+        nargs="*",
+        default=None,
+        help="Extra text filters to remove from vacancy descriptions (space-separated list).",
+    )
+    args = parser.parse_args()
+
+    wrangler = Wrangler(
+        args.category,
+        extra_text_filters=set(args.extra_text_filters) if args.extra_text_filters else None,
+    )
     wrangler.extract_text_from_vacancies()
     statistics = wrangler.calculate_frequency_distribution()
     wrangler.save_statistics(statistics)
+
+
+if __name__ == "__main__":
+    main()
