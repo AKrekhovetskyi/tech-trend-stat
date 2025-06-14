@@ -2,15 +2,38 @@ import json
 import logging
 from collections.abc import AsyncIterator, Generator
 from datetime import datetime
+from secrets import choice
 from typing import Any, ClassVar
 from urllib.parse import quote_plus
 from zoneinfo import ZoneInfo
 
 import scrapy
+from fake_useragent import UserAgent
 from parsel.selector import Selector, SelectorList
 from scrapy.http import Request, Response
 
 from database import InteractionStats, VacancyItem
+
+ua = UserAgent()
+default_request_headers = {
+    "Accept": (
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,"
+        "application/signed-exchange;v=b3;q=0.7"
+    ),
+    "Accept-Language": "uk-UA,uk;q=0.9,en-US,en;q=0.8,ru;q=0.7",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Cache-Control": "max-age=0",
+    "Connection": "keep-alive",
+    "Host": "djinni.co",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "sec-ch-ua": '"Chromium";v="136", "Microsoft Edge";v="136", "Not.A/Brand";v="99"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Linux"',
+}
 
 
 class NotFoundError(Exception): ...
@@ -38,8 +61,14 @@ class DjinniSpider(scrapy.Spider):
                 self.category = primary_keyword
                 yield Request(
                     f"{url}?primary_keyword={quote_plus(primary_keyword)}",
-                    headers={"accept-language": "uk-UA,uk;q=0.9,en-US,en;q=0.8,ru;q=0.7"},
-                    meta={"proxy": self.settings["PROXY_URL"]} if self.settings["PROXY_URL"] else None,
+                    headers={
+                        "Referer": f"https://djinni.co/jobs/?primary_keyword={quote_plus(primary_keyword)}",
+                        "User-Agent": ua.random,
+                    }
+                    | default_request_headers,
+                    meta={"proxy": f"http://{choice(self.settings['PROXY_LIST'])}"}
+                    if self.settings["PROXY_LIST"]
+                    else None,
                 )
 
     def _extract_job_offers(self, selector: SelectorList) -> None:
