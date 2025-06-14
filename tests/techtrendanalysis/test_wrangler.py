@@ -1,4 +1,3 @@
-import csv
 from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -6,26 +5,13 @@ from zoneinfo import ZoneInfo
 import pytest
 from faker import Faker
 
-from database import CollectionStatistics, CollectionVacancies, Statistics, VacancyItem
+from database import CollectionStatistics, Statistics, VacancyItem
 from techtrendanalysis.wrangler import Wrangler
 
 CATEGORY = "Python"
 
 
 class TestWrangler:
-    path_to_csv = Path(__file__).parent / "test_vacancies.csv"
-
-    @pytest.fixture(scope="module")
-    def vacancy_items(self) -> list[VacancyItem]:
-        with self.path_to_csv.open() as csv_file:
-            reader = csv.DictReader(csv_file)
-            return [VacancyItem(**item) for item in reader]  # type: ignore[reportArgumentType]
-
-    @pytest.fixture
-    def _upsert_vacancies_to_collection(self, vacancy_items: list[VacancyItem]) -> None:
-        with CollectionVacancies() as collection_vacancies:
-            collection_vacancies.bulk_upsert(("url",), items=vacancy_items)  # type: ignore[reportArgumentType]
-
     @pytest.fixture
     def wrangler(self) -> Wrangler:
         tzinfo = ZoneInfo("Europe/Kyiv")
@@ -55,8 +41,8 @@ class TestWrangler:
         assert wrangler._text == cleaned_text, f"{wrangler._text=}"
 
     @pytest.mark.usefixtures("_upsert_vacancies_to_collection")
-    def test_extract_text_from_vacancies(self, wrangler: Wrangler) -> None:
-        wrangler.extract_text_from_vacancies(path_to_csv=self.path_to_csv)
+    def test_extract_text_from_vacancies(self, wrangler: Wrangler, test_vacancies: Path) -> None:
+        wrangler.extract_text_from_vacancies(path_to_csv=test_vacancies)
         assert wrangler._text
 
         wrangler._text = ""
