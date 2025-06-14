@@ -5,6 +5,7 @@
 ## Features
 
 - [Scraping jobs from Djinni](techtrendscrape/spiders/djinni.py) by several specialization categories (e.g. Python, Java, DevOps, etc.).
+- Proxy and user agent rotation.
 - Ability to work with local and cloud MongoDB, as well as with regular CSV files.
 - Using [`Pydantic` models](database/models.py) instead of standard items for better data validation.
 - [Database collections](database/collections.py) to simplify connection to MongoDB.
