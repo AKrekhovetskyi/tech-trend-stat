@@ -55,6 +55,8 @@ class Wrangler(Logging):
         stopwords = (STOPWORDS_DIR / "stopwords.json").read_text()
         ukr_stopwords = (STOPWORDS_DIR / "ukrainian-stopwords.json").read_text()
         self._stopwords = set(loads(ukr_stopwords) + loads(common_words) + loads(stopwords))
+        tech_completions = (Path(__file__).parent / "tech_completions.json").read_text()
+        self.tech_completions: dict[str, str] = loads(tech_completions)
 
     def _clean_text(self) -> None:
         self.logger.debug("Cleaning text ...")
@@ -93,7 +95,7 @@ class Wrangler(Logging):
                         self._text += row["description"]
         self.logger.debug("Text extracted")
 
-    def calculate_frequency_distribution(self, limit_results: int = 20) -> Statistics:
+    def calculate_frequency_distribution(self, limit_results: int = 50) -> Statistics:
         self._clean_text()
 
         self.logger.debug("Calculating frequency distribution ...")
@@ -113,7 +115,7 @@ class Wrangler(Logging):
                 and (ord(token_text[0]) in eng_uppercase or ord(token_text[0]) in eng_lowercase)
             ):
                 proper_nouns.append(token_text_lower)
-                lower_to_upper[token_text_lower] = token_text
+                lower_to_upper[token_text_lower] = self.tech_completions.get(token_text_lower, token_text)
 
         proper_nouns_count = Counter(proper_nouns)
         self.logger.debug("Calculation complete")
