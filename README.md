@@ -9,7 +9,7 @@
 - Using [`Pydantic` models](database/models.py) instead of standard items for better data validation.
 - [Database collections](database/collections.py) to simplify connection to MongoDB.
 - [Two pipelines](techtrendscrape/pipelines.py) (Mongo and CSV).
-- [Data Wrangling](techtrendanalysis/wrangler.py). Clean up text and extract technology statistics.
+- [Data Wrangling](techtrendanalysis/wrangler.py). Clean up text and extract technology statistics with CLI.
 
 ## Linux Installation
 
@@ -51,11 +51,16 @@ To scrape the vacancies into a CSV file, comment out all the `MONGODB_*` environ
 
 You can substitute "Python" for any other category, or a stack of categories separated by a " | ". See available specializations (categories) on the [Djinni](https://djinni.co/jobs) website.
 
-To extract statistics from job descriptions, run the [`wrangler`](techtrendanalysis/wrangler.py) file, passing the desired category name:
+To extract statistics from job descriptions, first install the required spaCy model:
 
 ```bash
 uv run spacy download en_core_web_md
-uv run python3.13 -m techtrendanalysis.wrangler
+```
+
+To run the [`wrangler`](techtrendanalysis/wrangler.py), use its CLI:
+
+```bash
+uv run python -m techtrendanalysis.wrangler --help
 ```
 
 ## Data Analysis
