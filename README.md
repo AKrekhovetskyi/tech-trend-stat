@@ -2,6 +2,8 @@
 
 **Technology Trends Statistician** is your go-to tool for real-time insights into the ever-changing technology landscape, combining web scraping and data analysis to track and analyze the latest trends in development job descriptions.
 
+The visualized data collected by this project can be viewed at https://akrekhovetskyi.github.io/. The source code of the website can be found at https://github.com/AKrekhovetskyi/AKrekhovetskyi.github.io.
+
 ## Features
 
 - [Scraping jobs from Djinni](techtrendscrape/spiders/djinni.py) by several specialization categories (e.g. Python, Java, DevOps, etc.).
